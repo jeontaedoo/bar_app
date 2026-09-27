@@ -1,0 +1,337 @@
+[
+  {
+    "pk": 6,
+    "title": "apple",
+    "category": null
+  },
+  {
+    "pk": 7,
+    "title": "banana",
+    "category": null
+  },
+  {
+    "pk": 8,
+    "title": "cherry",
+    "category": null
+  },
+  {
+    "pk": 9,
+    "title": "citrus",
+    "category": null
+  },
+  {
+    "pk": 10,
+    "title": "fruity",
+    "category": null
+  },
+  {
+    "pk": 11,
+    "title": "lemon",
+    "category": null
+  },
+  {
+    "pk": 12,
+    "title": "orange",
+    "category": null
+  },
+  {
+    "pk": 13,
+    "title": "pear",
+    "category": null
+  },
+  {
+    "pk": 14,
+    "title": "raisins",
+    "category": null
+  },
+  {
+    "pk": 15,
+    "title": "zest",
+    "category": null
+  },
+  {
+    "pk": 16,
+    "title": "balanced",
+    "category": null
+  },
+  {
+    "pk": 17,
+    "title": "complex",
+    "category": null
+  },
+  {
+    "pk": 18,
+    "title": "dry",
+    "category": null
+  },
+  {
+    "pk": 19,
+    "title": "earthy",
+    "category": null
+  },
+  {
+    "pk": 20,
+    "title": "heavy",
+    "category": null
+  },
+  {
+    "pk": 21,
+    "title": "light",
+    "category": null
+  },
+  {
+    "pk": 22,
+    "title": "lingering",
+    "category": null
+  },
+  {
+    "pk": 23,
+    "title": "mellow",
+    "category": null
+  },
+  {
+    "pk": 24,
+    "title": "mild",
+    "category": null
+  },
+  {
+    "pk": 25,
+    "title": "old",
+    "category": null
+  },
+  {
+    "pk": 26,
+    "title": "smooth",
+    "category": null
+  },
+  {
+    "pk": 27,
+    "title": "barley",
+    "category": null
+  },
+  {
+    "pk": 28,
+    "title": "buttery",
+    "category": null
+  },
+  {
+    "pk": 29,
+    "title": "butterscotch",
+    "category": null
+  },
+  {
+    "pk": 30,
+    "title": "candy",
+    "category": null
+  },
+  {
+    "pk": 31,
+    "title": "chocolate",
+    "category": null
+  },
+  {
+    "pk": 32,
+    "title": "cinnamon",
+    "category": null
+  },
+  {
+    "pk": 33,
+    "title": "cocoa",
+    "category": null
+  },
+  {
+    "pk": 34,
+    "title": "corn",
+    "category": null
+  },
+  {
+    "pk": 35,
+    "title": "honey",
+    "category": null
+  },
+  {
+    "pk": 36,
+    "title": "tea",
+    "category": null
+  },
+  {
+    "pk": 37,
+    "title": "toffee",
+    "category": null
+  },
+  {
+    "pk": 38,
+    "title": "clove",
+    "category": null
+  },
+  {
+    "pk": 39,
+    "title": "coffee",
+    "category": null
+  },
+  {
+    "pk": 40,
+    "title": "floral",
+    "category": null
+  },
+  {
+    "pk": 41,
+    "title": "licorice",
+    "category": null
+  },
+  {
+    "pk": 42,
+    "title": "malty",
+    "category": null
+  },
+  {
+    "pk": 43,
+    "title": "mint",
+    "category": null
+  },
+  {
+    "pk": 44,
+    "title": "nutmeg",
+    "category": null
+  },
+  {
+    "pk": 45,
+    "title": "peaty",
+    "category": null
+  },
+  {
+    "pk": 46,
+    "title": "peppery",
+    "category": null
+  },
+  {
+    "pk": 47,
+    "title": "roses",
+    "category": null
+  },
+  {
+    "pk": 48,
+    "title": "spices",
+    "category": null
+  },
+  {
+    "pk": 49,
+    "title": "sugar",
+    "category": null
+  },
+  {
+    "pk": 50,
+    "title": "tobacco",
+    "category": null
+  },
+  {
+    "pk": 51,
+    "title": "vanilla",
+    "category": null
+  },
+  {
+    "pk": 52,
+    "title": "wood",
+    "category": null
+  },
+  {
+    "pk": 53,
+    "title": "sherry",
+    "category": null
+  },
+  {
+    "pk": 54,
+    "title": "bitter",
+    "category": null
+  },
+  {
+    "pk": 55,
+    "title": "brine",
+    "category": null
+  },
+  {
+    "pk": 56,
+    "title": "creamy",
+    "category": null
+  },
+  {
+    "pk": 57,
+    "title": "ginger",
+    "category": null
+  },
+  {
+    "pk": 58,
+    "title": "herbal",
+    "category": null
+  },
+  {
+    "pk": 59,
+    "title": "maple",
+    "category": null
+  },
+  {
+    "pk": 60,
+    "title": "nutty",
+    "category": null
+  },
+  {
+    "pk": 61,
+    "title": "oak",
+    "category": null
+  },
+  {
+    "pk": 62,
+    "title": "rich",
+    "category": null
+  },
+  {
+    "pk": 63,
+    "title": "salty",
+    "category": null
+  },
+  {
+    "pk": 64,
+    "title": "smokey",
+    "category": null
+  },
+  {
+    "pk": 65,
+    "title": "sour",
+    "category": null
+  },
+  {
+    "pk": 66,
+    "title": "spicy",
+    "category": null
+  },
+  {
+    "pk": 67,
+    "title": "sweet",
+    "category": null
+  },
+  {
+    "pk": 68,
+    "title": "amber",
+    "category": null
+  },
+  {
+    "pk": 69,
+    "title": "brown",
+    "category": null
+  },
+  {
+    "pk": 70,
+    "title": "green",
+    "category": null
+  },
+  {
+    "pk": 71,
+    "title": "caramel",
+    "category": null
+  },
+  {
+    "pk": 72,
+    "title": "pal",
+    "category": ""
+  }
+]

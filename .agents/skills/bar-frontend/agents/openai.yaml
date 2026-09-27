@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bar App Frontend"
+  short_description: "Bar App의 Nuxt/Vue 화면과 클라이언트 로직 작업"
+  default_prompt: "Bar App의 저장소 규칙에 맞춰 프런트엔드 변경을 구현하고 검증해 주세요."

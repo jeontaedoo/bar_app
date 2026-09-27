@@ -9,7 +9,7 @@ When creating a new Vue (.vue) file, always use the following SFC (Single File C
 ```vue
 <template>
   <div class="">
-    
+
   </div>
 </template>
 

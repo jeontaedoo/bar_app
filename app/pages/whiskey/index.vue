@@ -41,6 +41,11 @@
               v-if="cat.subCategories?.length && openId === cat.id"
               class="sub-list"
             >
+              <li class="sub-item" @click.stop="navigateTo(`/whiskey/${cat.id}`)">
+                <span class="sub-num">{{ index + 1 }}.0</span>
+                <span class="sub-name">전체 {{ cat.name }} 보기</span>
+                <span class="sub-arrow">→</span>
+              </li>
               <li
                 v-for="(sub, subIndex) in cat.subCategories"
                 :key="sub.id"

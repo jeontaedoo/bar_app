@@ -6,6 +6,13 @@ export default defineEventHandler(async (event) => {
 
   const { texts, targetLang = 'KO', sourceLang = 'EN' } = body
 
+  if (!config.deeplApiKey) {
+    throw createError({
+      statusCode: 500,
+      message: 'DeepL API key is not configured. Set NUXT_DEEPL_API_KEY.',
+    })
+  }
+
   if (!texts?.length) {
     throw createError({ statusCode: 400, message: 'texts is required' })
   }

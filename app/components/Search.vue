@@ -99,6 +99,7 @@
 <script setup lang="ts">
 import { useWhiskyEditionApi, getWhiskyImageUrl } from '~/composables/useWhiskyEditionApi'
 import { useCocktailApi } from '~/composables/useCocktailApi'
+import { useWhiskeyProjectApi } from '~/composables/useWhiskeyProjectApi'
 import { WHISKY_ALIASES, WHISKEY_CATEGORIES } from '~/sheets/whiskySheet'
 
 // ─── 검색 결과 타입 ───────────────────────────────────────────
@@ -106,7 +107,7 @@ export interface SearchResultItem {
   id: string | number
   title: string
   subtitle?: string
-  type: 'whiskey-category' | 'whiskey-detail' | 'cocktail' | 'bar'
+  type: 'whiskey-category' | 'whiskey-catalog' | 'whiskey-detail' | 'cocktail' | 'bar'
   typeLabel: string
   link: string
   thumbnail?: string
@@ -115,6 +116,7 @@ export interface SearchResultItem {
 // ─── 상태 ──────────────────────────────────────────────────────
 const router = useRouter()
 const { getReviews } = useWhiskyEditionApi()
+const { searchWhiskies } = useWhiskeyProjectApi()
 const { searchByName: searchCocktails } = useCocktailApi()
 
 const searchRef = ref<HTMLElement | null>(null)
@@ -174,7 +176,22 @@ async function performSearch(query: string) {
     }))
     results.push(...matchedCategories)
 
-    // 2. 위스키 개별 상세 리뷰 API 검색
+    // 2. 로컬 WhiskeyProject 위스키명 검색
+    const catalogRes = await searchWhiskies(apiQuery, 5)
+    if (catalogRes?.items.length) {
+      const catalogItems = catalogRes.items.map((whisky) => ({
+        id: whisky.id,
+        title: whisky.title,
+        subtitle: whisky.region || undefined,
+        type: 'whiskey-catalog' as const,
+        typeLabel: '위스키',
+        link: `/whiskey/catalog/${whisky.id}`,
+        thumbnail: whisky.imageUrl || undefined,
+      }))
+      results.push(...catalogItems)
+    }
+
+    // 3. 위스키 개별 상세 리뷰 API 검색
     const whiskyApiRes = await getReviews({ q: apiQuery, per_page: 5 })
     if (whiskyApiRes?.items?.length) {
       const apiWhiskyItems = whiskyApiRes.items.map((w) => {
@@ -192,7 +209,7 @@ async function performSearch(query: string) {
       results.push(...apiWhiskyItems)
     }
 
-    // 3. 칵테일 API 검색
+    // 4. 칵테일 API 검색
     const cocktails = await searchCocktails(rawQuery)
     if (cocktails?.length) {
       const cocktailItems = cocktails.map((c) => ({
@@ -481,6 +498,11 @@ onUnmounted(() => {
 }
 
 .badge-whiskey-detail {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.badge-whiskey-catalog {
   background: #f0fdf4;
   color: #16a34a;
 }

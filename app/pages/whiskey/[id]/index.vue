@@ -24,17 +24,17 @@
         </div>
       </section>
 
-      <!-- 리뷰 목록 (API) -->
+      <!-- WhiskeyProject 목록 -->
       <section class="section">
         <div class="section_header">
-          <h2 class="section_title">📖 전문가 리뷰</h2>
+          <h2 class="section_title">🥃 위스키 목록</h2>
           <span v-if="totalCount > 0" class="section_count">{{ totalCount }}개</span>
         </div>
 
         <!-- 로딩 -->
         <div v-if="loading" class="state state-loading">
           <div class="spinner" />
-          <p>리뷰를 불러오는 중...</p>
+          <p>위스키를 불러오는 중...</p>
         </div>
 
         <!-- 에러 -->
@@ -45,7 +45,8 @@
 
         <!-- 데이터 없음 -->
         <div v-else-if="reviews.length === 0" class="state state-empty-reviews">
-          <p>등록된 리뷰가 없습니다.</p>
+          <p>이 분류에 해당하는 위스키 데이터가 없습니다.</p>
+          <p>WhiskeyProject는 일부 세부 종류를 구분하지 않습니다.</p>
         </div>
 
         <!-- 리뷰 카드 목록 -->
@@ -56,36 +57,28 @@
             class="review-item"
           >
             <NuxtLink
-              :to="`/whiskey/${route.params.id}/${review.slug}`"
+              :to="`/whiskey/${route.params.id}/${review.id}`"
               class="review-link"
             >
               <img
-                :src="`https://thewhiskyedition.com${review.image.url}`"
-                :alt="review.image.alt ?? review.name"
+                v-if="review.imageUrl"
+                :src="review.imageUrl"
+                :alt="review.title"
                 class="review-img"
                 loading="lazy"
               />
               <div class="review-body">
                 <div class="review-meta">
-                  <span v-if="review.metadata.distillery" class="review-distillery">
-                    {{ review.metadata.distillery }}
-                  </span>
-                  <span v-if="review.metadata.age && review.metadata.age > 0" class="review-age">
-                    {{ review.metadata.age }}년
-                  </span>
-                  <span class="review-abv">{{ review.metadata.abv }}%</span>
+                  <span class="review-distillery">{{ review.region }}</span>
                 </div>
-                <p class="review-name">{{ review.name }}</p>
-                <p class="review-desc">{{ translations.get(review.id) ?? review.description }}</p>
+                <p class="review-name">{{ review.title }}</p>
+                <p v-if="review.description" class="review-desc">{{ review.description }}</p>
                 <div class="review-footer">
-                  <div class="review-score" v-if="avgRating(review.rating) !== null">
-                    <span class="score-dot" :style="{ background: ratingColor(avgRating(review.rating)!) }" />
-                    <span class="score-val">{{ avgRating(review.rating) }}</span>
+                  <div class="review-score" v-if="review.rating !== null">
+                    <span class="score-dot" :style="{ background: ratingColor(review.rating) }" />
+                    <span class="score-val">{{ review.rating }}</span>
                     <span class="score-label">/ 100</span>
                   </div>
-                  <span class="review-vfm" v-if="review.rating.value_for_money">
-                    💰 {{ '★'.repeat(review.rating.value_for_money) }}{{ '☆'.repeat(5 - review.rating.value_for_money) }}
-                  </span>
                 </div>
               </div>
             </NuxtLink>
@@ -113,7 +106,7 @@
 </template>
 
 <script setup lang="ts">
-import { useWhiskyEditionApi, getAverageRating, type WhiskySummary, type WhiskyRating } from '~/composables/useWhiskyEditionApi'
+import { useWhiskeyProjectApi, type WhiskeyProjectWhisky } from '~/composables/useWhiskeyProjectApi'
 
 // ─── 카테고리 메타데이터 ───────────────────────────────────────
 interface CategoryMeta {
@@ -123,8 +116,6 @@ interface CategoryMeta {
   region?: string
   desc: string
   tags?: string[]
-  /** API 호출 시 사용할 파라미터 */
-  apiParams: { type?: string; country?: string }
 }
 
 const CATEGORY_MAP: Record<string, CategoryMeta> = {
@@ -135,7 +126,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '스코틀랜드',
     desc: '스코틀랜드에서 생산되는 위스키로, 엄격한 법적 기준에 따라 최소 3년 이상 오크통에서 숙성됩니다. 피트 향과 스모키한 특성으로 세계적으로 유명합니다.',
     tags: ['피트향', '스모키', '오크 숙성', '최소 3년'],
-    apiParams: { country: 'Scotland' },
   },
   'single-malt': {
     id: 'single-malt',
@@ -144,7 +134,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '스코틀랜드',
     desc: '단일 증류소에서 100% 몰트 보리만을 사용해 만든 위스키입니다. 각 증류소의 개성과 테루아를 가장 잘 표현하며, 위스키 애호가들에게 가장 사랑받는 스타일입니다.',
     tags: ['단일 증류소', '몰트 보리', '개성 강함', '다양한 지역'],
-    apiParams: { type: 'Single Malt' },
   },
   blended: {
     id: 'blended',
@@ -153,7 +142,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '스코틀랜드',
     desc: '여러 증류소의 몰트 위스키와 그레인 위스키를 혼합해 만든 위스키입니다. 일관된 풍미와 접근하기 쉬운 맛으로 전 세계 위스키 시장의 약 90%를 차지합니다.',
     tags: ['여러 증류소 혼합', '일관된 풍미', '접근하기 쉬움', '대중적'],
-    apiParams: { type: 'Blended' },
   },
   'blended-malt': {
     id: 'blended-malt',
@@ -162,7 +150,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '스코틀랜드',
     desc: '그레인 위스키 없이 여러 증류소의 싱글몰트 위스키만을 혼합한 스타일입니다. 바티드 몰트(Vatted Malt)라고도 불리며, 싱글몰트의 복잡성과 블랜디드의 접근성을 동시에 갖춥니다.',
     tags: ['몰트만 사용', '다중 증류소', '복잡한 풍미'],
-    apiParams: { type: 'Blended Malt' },
   },
   'single-grain': {
     id: 'single-grain',
@@ -171,7 +158,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '스코틀랜드',
     desc: '단일 증류소에서 몰트 보리 외의 곡물(밀, 옥수수 등)을 사용해 만든 위스키입니다. 가볍고 부드러운 특성을 지니며, 주로 블랜디드 위스키의 베이스로 사용됩니다.',
     tags: ['단일 증류소', '다양한 곡물', '가볍고 부드러움'],
-    apiParams: { type: 'Single Grain' },
   },
   american: {
     id: 'american',
@@ -180,7 +166,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '미국',
     desc: '미국에서 생산되는 위스키의 총칭으로, 버번, 라이, 테네시 등 다양한 스타일을 포함합니다. 새 오크통 사용이 특징이며 바닐라, 카라멜의 달콤한 향이 주를 이룹니다.',
     tags: ['새 오크통', '달콤함', '바닐라', '카라멜'],
-    apiParams: { country: 'USA' },
   },
   bourbon: {
     id: 'bourbon',
@@ -189,7 +174,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '미국 켄터키',
     desc: '51% 이상의 옥수수를 사용하고 새 아메리칸 화이트 오크 통에서 숙성한 아메리칸 위스키입니다. 법적으로 켄터키에서만 생산해야 하는 것은 아니지만, 대부분 켄터키에서 만들어집니다.',
     tags: ['옥수수 51% 이상', '새 오크통', '바닐라', '카라멜', '켄터키'],
-    apiParams: { type: 'Bourbon' },
   },
   rye: {
     id: 'rye',
@@ -198,7 +182,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '미국',
     desc: '51% 이상의 호밀(라이)을 사용해 만든 위스키로, 버번보다 스파이시하고 드라이한 풍미가 특징입니다. 클래식 칵테일인 맨해튼, 올드 패션드에 잘 어울립니다.',
     tags: ['호밀 51% 이상', '스파이시', '드라이', '칵테일 베이스'],
-    apiParams: { type: 'Rye' },
   },
   tennessee: {
     id: 'tennessee',
@@ -207,7 +190,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '미국 테네시',
     desc: '버번과 유사하지만 증류 후 사탕단풍 숯으로 필터링하는 링컨 카운티 프로세스를 거칩니다. 이 과정으로 더 부드럽고 깔끔한 풍미를 갖게 됩니다.',
     tags: ['링컨 카운티 프로세스', '숯 필터링', '부드러움', '테네시'],
-    apiParams: { type: 'Tennessee' },
   },
   irish: {
     id: 'irish',
@@ -216,7 +198,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '아일랜드',
     desc: '삼중 증류로 만들어져 스카치보다 가볍고 부드러운 것이 특징입니다. 피트를 거의 사용하지 않아 과일향과 꿀향이 두드러집니다.',
     tags: ['삼중 증류', '부드러움', '과일향', '피트 없음'],
-    apiParams: { country: 'Ireland' },
   },
   canadian: {
     id: 'canadian',
@@ -225,7 +206,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '캐나다',
     desc: '라이 위스키를 베이스로 한 가볍고 부드러운 스타일이 특징입니다. 최소 3년 이상 숙성하며, 다른 나라 위스키보다 법적 규제가 덜 엄격합니다.',
     tags: ['라이 베이스', '가볍고 부드러움', '최소 3년 숙성'],
-    apiParams: { country: 'Canada' },
   },
   japanese: {
     id: 'japanese',
@@ -234,7 +214,6 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '일본',
     desc: '스카치의 전통을 바탕으로 일본만의 섬세함과 정교함을 더한 위스키입니다. 미즈나라 오크통 등 독특한 숙성 기법으로 세계적인 주목을 받고 있습니다.',
     tags: ['섬세함', '정교한 균형', '미즈나라 오크', '스모키함'],
-    apiParams: { country: 'Japan' },
   },
   korean: {
     id: 'korean',
@@ -243,17 +222,14 @@ const CATEGORY_MAP: Record<string, CategoryMeta> = {
     region: '대한민국',
     desc: '국내에서 생산되는 위스키로, 최근 프리미엄 증류소들이 등장하며 주목받고 있습니다. 한국의 전통 재료와 현대적인 증류 기술을 결합한 새로운 시도가 이어지고 있습니다.',
     tags: ['국산', '프리미엄', '현대적', '한국 특산 재료'],
-    apiParams: { country: 'South Korea' },
   },
 }
 
 // ─── 상태 ──────────────────────────────────────────────────────
 const route = useRoute()
-const { loading, error, getReviews } = useWhiskyEditionApi()
-const { translateBatch } = useDeeplApi()
+const { loading, error, getWhiskies } = useWhiskeyProjectApi()
 
-const reviews = ref<WhiskySummary[]>([])
-const translations = ref<Map<number, string>>(new Map())
+const reviews = ref<WhiskeyProjectWhisky[]>([])
 const totalCount = ref(0)
 const currentPage = ref(1)
 const loadingMore = ref(false)
@@ -266,11 +242,6 @@ const category = computed(() => {
 
 const hasMore = computed(() => reviews.value.length < totalCount.value)
 
-// ─── 평점 헬퍼 ────────────────────────────────────────────────
-function avgRating(rating: WhiskyRating): number | null {
-  return getAverageRating(rating)
-}
-
 function ratingColor(score: number): string {
   if (score >= 85) return '#22c55e'
   if (score >= 70) return '#f59e0b'
@@ -282,17 +253,10 @@ async function fetchReviews() {
   if (!category.value) return
   currentPage.value = 1
   reviews.value = []
-  translations.value = new Map()
-
-  const result = await getReviews({
-    ...category.value.apiParams,
-    page: 1,
-    per_page: PER_PAGE,
-  })
+  const result = await getWhiskies(category.value.id, 1, PER_PAGE)
   if (result) {
     reviews.value = result.items
     totalCount.value = result.total
-    await translateDescriptions(result.items)
   }
 }
 
@@ -302,32 +266,14 @@ async function loadMore() {
   currentPage.value++
 
   try {
-    const result = await getReviews({
-      ...category.value.apiParams,
-      page: currentPage.value,
-      per_page: PER_PAGE,
-    })
+    const result = await getWhiskies(category.value.id, currentPage.value, PER_PAGE)
     if (result) {
       reviews.value.push(...result.items)
-      await translateDescriptions(result.items)
+    } else {
+      currentPage.value--
     }
   } finally {
     loadingMore.value = false
-  }
-}
-
-// ─── description 배치 번역 ────────────────────────────────────
-async function translateDescriptions(items: WhiskySummary[]) {
-  if (!items.length) return
-  try {
-    const translated = await translateBatch(items.map((r) => r.description))
-    const map = new Map(translations.value)
-    items.forEach((r, i) => {
-      map.set(r.id, translated[i] ?? r.description)
-    })
-    translations.value = map
-  } catch {
-    // 번역 실패 시 원문 유지 (별도 에러 표시 없음)
   }
 }
 

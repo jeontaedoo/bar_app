@@ -1,0 +1,4 @@
+interface:
+  display_name: "Bar Cocktail Catalog"
+  short_description: "Bar App의 로컬 칵테일 레시피 데이터 관리"
+  default_prompt: "Bar App의 로컬 칵테일 레시피 데이터를 무결성과 출처 규칙에 맞게 수정하고 검증해 주세요."
